@@ -6,6 +6,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
+import pickle
 
 df = pd.read_csv('./sentiment_data.csv', encoding='ISO-8859-1', header=None)
 df.columns = ['target', 'ids', 'date', 'flag', 'user', 'text']
@@ -39,3 +40,9 @@ history = model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val))
 
 test_loss, test_acc = model.evaluate(X_test, y_test, verbose=2)
 print('\nTest accuracy:', test_acc)
+
+# Save the LSTM model
+model.save('sentiment_lstm_model.h5')
+
+with open('tokenizer.pickle', 'wb') as handle:
+    pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
