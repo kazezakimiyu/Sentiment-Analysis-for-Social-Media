@@ -4,6 +4,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report, accuracy_score
+import json
+import joblib
+import numpy as np
 
 df = pd.read_csv('./sentiment_data.csv', encoding='ISO-8859-1', header=None)
 df.columns = ['target', 'ids', 'date', 'flag', 'user', 'text']
@@ -25,6 +28,30 @@ model.fit(X_train_vect, y_train)
 # Predictions
 predictions = model.predict(X_test_vect)
 
-# Evaluation
-print("Accuracy:", accuracy_score(y_test, predictions))
+# Evaluate the model
+accuracy = accuracy_score(y_test, predictions)
+report = classification_report(y_test, predictions, output_dict=True)
+print("Accuracy:", accuracy)
 print(classification_report(y_test, predictions))
+
+# Save the model and metrics
+joblib.dump(model, 'naive_bayes_model.pkl')
+joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
+
+# Extract metrics
+metrics = {
+    'accuracy': report['accuracy'],
+    'precision': report['weighted avg']['precision'],
+    'recall': report['weighted avg']['recall'],
+    'f1-score': report['weighted avg']['f1-score']
+}
+
+'''
+# Print and save metrics
+with open('naive_bayes_metrics.txt', 'w') as f:
+    for key, value in metrics.items():
+        f.write(f'{key}: {value}\n')
+'''
+# Save the report as JSON
+with open('bayes_classification_report.json', 'w') as f:
+    json.dump(report, f)

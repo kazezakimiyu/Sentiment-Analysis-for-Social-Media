@@ -6,7 +6,10 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
 import pickle
+import json
+import numpy as np
 
 df = pd.read_csv('./sentiment_data.csv', encoding='ISO-8859-1', header=None)
 df.columns = ['target', 'ids', 'date', 'flag', 'user', 'text']
@@ -41,8 +44,35 @@ history = model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val))
 test_loss, test_acc = model.evaluate(X_test, y_test, verbose=2)
 print('\nTest accuracy:', test_acc)
 
+# Convert the probabilities to class labels
+y_pred = model.predict(X_test)
+y_pred = np.argmax(y_pred, axis=1)
+y_true = np.argmax(y_test, axis=1)
+
+# Generate classification report
+report = classification_report(y_true, y_pred, target_names=['Negative', 'Neutral', 'Positive'], output_dict=True)
+print('\nTest accuracy:', test_acc)
+print('\nClassification Report:\n', classification_report(y_true, y_pred, target_names=['Negative', 'Neutral', 'Positive']))
+
 # Save the LSTM model
 model.save('sentiment_lstm_model.h5')
 
 with open('tokenizer.pickle', 'wb') as handle:
     pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+# Save the metrics
+metrics = {
+    'accuracy': report['accuracy'],
+    'precision': report['weighted avg']['precision'],
+    'recall': report['weighted avg']['recall'],
+    'f1-score': report['weighted avg']['f1-score']
+}
+'''
+with open('lstm_metrics.txt', 'w') as f:
+    for key, value in metrics.items():
+        f.write(f'{key}: {value}\n')
+'''
+report = classification_report(y_true, y_pred, target_names=['Negative', 'Neutral', 'Positive'], output_dict=True)
+# Save the report as JSON
+with open('lstm_classification_report.json', 'w') as f:
+    json.dump(report, f)
