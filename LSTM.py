@@ -11,6 +11,7 @@ from sklearn.metrics import classification_report, accuracy_score
 from tensorflow.keras.callbacks import EarlyStopping
 import pickle
 import json
+import matplotlib.pyplot as plt
 
 # Load dataset
 df = pd.read_csv('../sentiment_data.csv', encoding='ISO-8859-1')
@@ -70,3 +71,33 @@ with open('tokenizer.pickle', 'wb') as handle:
 # Save the report as JSON
 with open('lstm_classification_report.json', 'w') as f:
     json.dump(report, f)
+
+# Extract the history of training and validation loss, and accuracy
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+accuracy = history.history['accuracy']
+val_accuracy = history.history['val_accuracy']
+epochs = range(1, len(loss) + 1)
+
+# Plotting the training and validation loss
+plt.figure(figsize=(12, 5))
+
+plt.subplot(1, 2, 1)
+plt.plot(epochs, loss, 'bo', label='Training loss')
+plt.plot(epochs, val_loss, 'b', label='Validation loss')
+plt.title('Training and Validation Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+
+# Plotting the training and validation accuracy
+plt.subplot(1, 2, 2)
+plt.plot(epochs, accuracy, 'ro', label='Training Accuracy')
+plt.plot(epochs, val_accuracy, 'r', label='Validation Accuracy')
+plt.title('Training and Validation Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
