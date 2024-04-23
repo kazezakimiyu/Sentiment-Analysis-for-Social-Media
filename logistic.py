@@ -1,7 +1,5 @@
 import pandas as pd
 import re
-import json
-import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
@@ -17,14 +15,13 @@ df.columns = ['target', 'ids', 'date', 'flag', 'user', 'text']
 df['text_clean'] = df['text'].apply(lambda x: ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", x).split()))
 df['target'] = df['target'].map({0: 0, 4: 2})
 
-# Preprocess your data (assuming it's already preprocessed as `text_clean` and `target` columns)
 X_train, X_test, y_train, y_test = train_test_split(df['text_clean'], df['target'], test_size=0.2, random_state=42)
 
 # Vectorization and feature scaling pipeline
 pipeline = make_pipeline(
     TfidfVectorizer(max_features=5000),
-    StandardScaler(with_mean=False),  # Use with_mean=False to keep it sparse
-    LogisticRegression(max_iter=1000)  # Increase the number of iterations
+    StandardScaler(with_mean=False),
+    LogisticRegression(max_iter=1000)
 )
 
 # Fit the model

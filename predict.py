@@ -21,7 +21,7 @@ def predict_sentiment():
 # Create the main window
 root = tk.Tk()
 root.title("Sentiment Analysis App")
-root.geometry('500x200')  # Set the size of the window
+root.geometry('500x200')
 
 # Layout using grid
 label = Label(root, text="Enter Text:")
