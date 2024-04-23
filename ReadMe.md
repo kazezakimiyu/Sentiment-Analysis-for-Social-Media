@@ -4,4 +4,4 @@ Instruction for python files: each python file with model name on it (bayes.py, 
 
 The predict.py is built based on the model from LSTM.py, if you want to try the small prediction app we created you can run predict.py directly, as the model generated from last time is being kept(sentiment_lstm_model)
 
-Thank you for your time!
+Thank you for your time! 
